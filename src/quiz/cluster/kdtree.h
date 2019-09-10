@@ -24,17 +24,16 @@ struct KdTree
     : root(NULL)
     {}
 
-    void insertHelper(Node** node, uint depth, std::vector<float> point, int id)
+    void insertHelper(Node **node, uint depth, std::vector<float> point, int id)
     {
         //tree is empty
-        if(*node ==NULL)
-            *node = new Node(point, id);
+        if(*node ==NULL) (*node) = new Node(point, id);
         else
         {
                 //calculate  current dim
-                uint cd = depth % 2;
+                uint curr_dim = depth % 2;
 
-                if(point[cd] < ((*node)->point[cd]))
+                if(point[curr_dim] < ((*node)->point[curr_dim]))
                     insertHelper(&((*node)->left), depth+1, point, id);
                 else
                     insertHelper(&((*node)->right), depth+1, point, id);
@@ -54,9 +53,12 @@ struct KdTree
     {
         if(node!=NULL)
         {
-            if(  (node->point[0]>=(target[0]-distanceTol)&&node->point[0]<=(target[0]+distanceTol)) &&  (node->point[1]>=(target[1]-distanceTol)&&node->point[1]>=(target[1]+distanceTol))  )
+            float dist_x = fabs(node->point[0] - target[0]);
+            float dist_y = fabs(node->point[1] - target[1]);
+            
+            if(dist_x <= distanceTol && dist_y <= distanceTol)
             {
-                float distance  = sqrt(((node->point[0]-target[0])*(node->point[0]-target[0])) + ((node->point[1]-target[1])*(node->point[1]-target[1])));
+                float distance  = sqrt((dist_x * dist_x) + (dist_y * dist_y));
                 if(distance <= distanceTol)
                     ids.push_back(node->id);
 
