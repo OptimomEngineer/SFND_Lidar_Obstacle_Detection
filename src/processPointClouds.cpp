@@ -236,7 +236,8 @@ std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::
 }
 
 //from ransac quiz for 3D
-std::unordered_set<int> RansacPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, int maxIterations, float distanceTol) {
+//std::unordered_set<int> RansacPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, int maxIterations, float distanceTol)
+std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::RansacPlane(typename pcl::PointCloud<PointT>::Ptr& cloud, int maxIterations, float distanceTol){
     std::unordered_set<int> inliersResult;
     srand(time(NULL));
 
