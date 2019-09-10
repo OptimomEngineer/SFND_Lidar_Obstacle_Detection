@@ -237,7 +237,7 @@ std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::
 
 //from ransac quiz for 3D
 template<typename PointT>
-std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::RANSAC3D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold){
+std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::ransacPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol){
     std::unordered_set<int> inliersResult;
 	srand(time(NULL));
 	while(maxIterations--){
