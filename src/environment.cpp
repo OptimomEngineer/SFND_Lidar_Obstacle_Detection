@@ -162,8 +162,8 @@ int main (int argc, char** argv)
         viewer->removeAllShapes();
 
         //load pcd and run obstacle detection process
-        inputCloudI = pointProcessor.loadPcd((*streamIterator).string());
-        cityBlock(viewer,pointProcessor,inputCloudI);
+        inputCloud = pointProcessor.loadPcd((*streamIterator).string());
+        cityBlock(viewer,pointProcessor,inputCloud);
 
         streamIterator++;
         if(streamIterator == stream.end())
