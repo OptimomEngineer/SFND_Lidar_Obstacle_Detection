@@ -51,10 +51,10 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // TODO:: Create point processor
     ProcessPointClouds<pcl::PointXYZ> pointProcessor;
     std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.SegmentPlane(inputCloud, 100, 0.2);
-    //renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0));
-    //renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0,1,0));
+    renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0)); //render red
+    renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0,1,0)); //render green
 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters = pointProcessor.Clustering(segmentCloud.first, 1.0, 10, 30);
+    /*std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters = pointProcessor.Clustering(segmentCloud.first, 1.0, 10, 30);
 
     int clusterId = 0;
     std::vector<Color> colors = {Color(1,0,0), Color(1,1,0), Color(0,0,1)};
@@ -69,12 +69,11 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
         ++clusterId;
     }
-
+*/
 
 }
 
-//void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
-void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZI> pointProcessor, pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud)
+void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZI>& pointProcessor, pcl::PointCloud<pcl::PointXYZI>::Ptr& inputCloud)
 {
     // ----------------------------------------------------
     // -----Open 3D viewer and display city block -----
@@ -89,22 +88,24 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     //ProcessPointClouds<pcl::PointXYZI> pointProcessor;
     //pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessor.loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
     
-    inputCloud = pointProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-10,-5,-2,1), Eigen::Vector4f(30,8,1,1));
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessor.SegmentPlane(inputCloud, 25, 0.3);
+    filteredCloud = pointProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-50,-6,-3,1), Eigen::Vector4f(60,7,3,1));
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessor.SegmentPlane(filteredCloud, 75, 0.3);
     //renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0));
-    //renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0,1,0));
+    renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0,1,0));
     std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessor.Clustering(segmentCloud.first, 0.53, 30, 500);
     
     int clusterId = 0;
     std::vector<Color> colors = {Color(1,0,0), Color(1,1,0), Color(0,0,1)};
-    for(pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : cloudClusters)
+    for(pcl::PointCloud<pcl::PointXYZI>::Ptr& cluster : cloudClusters)
     {
         std::cout << "cluster size ";
         pointProcessor.numPoints(cluster);
         renderPointCloud(viewer, cluster, "obstCloud"+std::to_string(clusterId), colors[clusterId%colors.size()]);
 
         Box box = pointProcessor.BoundingBox(cluster);
-        renderBox(viewer, box, clusterId);
+        //get rid of the little boxes
+        if(box.z_max - box.z_min >= 1.0 || cluster->points.size() >= 60)
+            renderBox(viewer, box, clusterId);
 
         ++clusterId;
     }
@@ -148,11 +149,11 @@ int main (int argc, char** argv)
 
     //create point cloud processor
 
-    ProcessPointClouds<pcl::PointXYZI> pointProcessorI;
-    std::vector<boost::filesystem::path> stream = pointProcessorI.streamPcd("../src/sensors/data/pcd/data_1");
+    ProcessPointClouds<pcl::PointXYZI> pointProcessor;
+    std::vector<boost::filesystem::path> stream = pointProcessor.streamPcd("../src/sensors/data/pcd/data_1");
     auto streamIterator = stream.begin();
 
-    pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloudI;
+    pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud;
 
     while (!viewer->wasStopped ())
     {
