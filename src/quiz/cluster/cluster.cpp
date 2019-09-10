@@ -75,7 +75,7 @@ void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 
 }
 
-void clusterHelper(int indice, const std::vector<std::vector<float>> points,  std::vector<int>& cluster, std::vector<bool> processed, KdTree* tree, float distanceTol)
+void clusterHelper(int indice, const std::vector<std::vector<float>> points,  std::vector<int>& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTol)
 {
     processed[indice] = true;
     cluster.push_back(indice);
