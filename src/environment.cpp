@@ -50,7 +50,7 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
     // TODO:: Create point processor
     ProcessPointClouds<pcl::PointXYZ> pointProcessor;
-    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.ransacPlane(inputCloud, 100, 0.2);
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.ransacCloud(inputCloud, 100, 0.2);
     renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0)); //render red
     renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0,1,0)); //render green
 
@@ -79,7 +79,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     // -----Open 3D viewer and display city block -----
     // ----------------------------------------------------
     
-    // TODO:: Create point processor
+    // TODO:: Create point processor (from the lessons)
     //this is for on  the heap with new
     //ProcessPointClouds<pcl::PointXYZI>* pointProcessor = new ProcessPointClouds<pcl::PointXYZI>();
     //pcl::<PointCloud<pcl::PointXYZI>>::Ptr inputCloud = pointProcessor->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd")
@@ -88,8 +88,8 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     //ProcessPointClouds<pcl::PointXYZI> pointProcessor;
     //pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessor.loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
     
-    filteredCloud = pointProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-50,-6,-3,1), Eigen::Vector4f(60,7,3,1));
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessor.ransacPlane(filteredCloud, 75, 0.3);
+    auto filteredCloud = pointProcessor.FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-50,-6,-3,1), Eigen::Vector4f(60,7,3,1));
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessor.ransacCloud(filteredCloud, 75, 0.3);
     renderPointCloud(viewer, segmentCloud.first, "obstCloud", Color(1,0,0));
     renderPointCloud(viewer, segmentCloud.second, "planeCloud", Color(0,1,0));
     std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessor.Clustering(segmentCloud.first, 0.53, 30, 500);
